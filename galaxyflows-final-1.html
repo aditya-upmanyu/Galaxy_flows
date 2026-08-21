@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="GalaxyFlows - AI-powered adaptive cyber defense and traffic intelligence dashboard">
+<title>GalaxyFlows — AI Cyber Defense</title>
+<style>
+:root{--bg:#050816;--panel:rgba(10,18,40,.72);--line:rgba(93,224,255,.2);--cyan:#54e6ff;--violet:#a970ff;--green:#36e0a1;--amber:#ffbd5a;--red:#ff5470;--text:#eaf4ff;--muted:#8ea4bd}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(circle at 50% 10%,#111c4d 0,#070b20 38%,#02040c 100%);color:var(--text);min-height:100vh;overflow-x:hidden}
+#space{position:fixed;inset:0;width:100%;height:100%;z-index:-3}.nebula{position:fixed;inset:-20%;z-index:-2;pointer-events:none;background:radial-gradient(ellipse at 20% 35%,rgba(116,70,255,.16),transparent 30%),radial-gradient(ellipse at 80% 70%,rgba(0,224,255,.11),transparent 30%);filter:blur(8px);animation:nebula 18s ease-in-out infinite alternate}
+@keyframes nebula{to{transform:scale(1.08) rotate(2deg)}}.app{width:min(1500px,94vw);margin:auto;padding:26px 0 60px}.top{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border:1px solid var(--line);border-radius:22px;background:rgba(5,10,28,.62);backdrop-filter:blur(18px);box-shadow:0 20px 70px rgba(0,0,0,.35);transform-style:preserve-3d}.brand{display:flex;gap:14px;align-items:center}.orb{width:48px;height:48px;border-radius:50%;background:radial-gradient(circle at 30% 25%,#fff, var(--cyan) 12%,#6d4dff 43%,transparent 67%);box-shadow:0 0 25px var(--cyan),0 0 60px #704cff;animation:orb 3s ease-in-out infinite}.brand h1{font-size:clamp(24px,4vw,38px);letter-spacing:2px}.brand p{font-size:11px;color:var(--muted);letter-spacing:2px}.status{padding:9px 14px;border:1px solid rgba(54,224,161,.35);border-radius:999px;color:var(--green);background:rgba(54,224,161,.07);font-weight:800;font-size:12px;letter-spacing:1px}.status.danger{color:var(--red);border-color:rgba(255,84,112,.4);background:rgba(255,84,112,.08)}
+@keyframes orb{50%{transform:scale(1.08);filter:hue-rotate(20deg)}}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0}.tab{cursor:pointer;border:1px solid transparent;background:rgba(12,23,48,.7);color:var(--muted);padding:12px 18px;border-radius:12px;font-weight:750;transition:.25s}.tab:hover,.tab.active{color:#fff;border-color:var(--line);background:rgba(38,68,110,.55);box-shadow:0 0 25px rgba(84,230,255,.08)}
+.panel{display:none;animation:rise .45s ease}.panel.active{display:block}@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}.btn{border:0;color:#fff;padding:12px 17px;border-radius:12px;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#6d4cff,#a950ff);box-shadow:0 8px 30px rgba(113,76,255,.2);transition:.2s}.btn:hover{transform:translateY(-2px);box-shadow:0 12px 35px rgba(84,230,255,.18)}.btn:disabled{opacity:.35;cursor:not-allowed;transform:none}.btn.alt{background:linear-gradient(135deg,#00a9c7,#00d6ad)}.btn.ghost{background:rgba(255,255,255,.05);border:1px solid var(--line);box-shadow:none}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:20px;backdrop-filter:blur(16px);box-shadow:0 18px 55px rgba(0,0,0,.22);position:relative;overflow:hidden;transform-style:preserve-3d;transition:.3s}.card:hover{border-color:rgba(84,230,255,.45);transform:translateY(-4px) perspective(700px) rotateX(1deg)}.card:after{content:"";position:absolute;width:170px;height:170px;right:-80px;top:-80px;border-radius:50%;background:radial-gradient(circle,rgba(84,230,255,.16),transparent 68%);pointer-events:none}.nodehead{display:flex;justify-content:space-between;align-items:start}.node h3{font-size:18px}.badge{font-size:10px;padding:5px 8px;border-radius:99px;color:var(--green);border:1px solid rgba(54,224,161,.3);background:rgba(54,224,161,.07)}.badge.warn{color:var(--amber);border-color:rgba(255,189,90,.3)}.badge.crit{color:var(--red);border-color:rgba(255,84,112,.35)}.metrics{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px}.metric{padding:12px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.05)}.metric small{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1px}.metric b{display:block;margin-top:4px;font-size:19px}.critical{color:var(--red)!important}
+.full{grid-column:1/-1}.section-title{font-size:17px;margin-bottom:14px;color:var(--cyan)}.chartwrap{height:300px}.chartwrap canvas{width:100%;height:100%;display:block}.flow3d{height:280px;display:flex;align-items:center;justify-content:center;perspective:900px;overflow:hidden}.flowline{display:flex;align-items:center;gap:12px;transform-style:preserve-3d;animation:tilt 8s ease-in-out infinite}.flowbox{width:130px;height:95px;display:grid;place-items:center;text-align:center;padding:12px;border:1px solid rgba(84,230,255,.5);border-radius:18px;background:linear-gradient(145deg,rgba(22,49,86,.9),rgba(36,17,72,.8));box-shadow:0 0 30px rgba(84,230,255,.08),inset 0 0 25px rgba(169,112,255,.08);transform:rotateY(-12deg);animation:float3d 3s ease-in-out infinite}.flowbox:nth-child(3){animation-delay:.3s}.flowbox:nth-child(5){animation-delay:.6s}.flowbox:nth-child(7){animation-delay:.9s}.flowbox:nth-child(9){animation-delay:1.2s}.flowbox strong{font-size:11px}.arrow{color:var(--cyan);font-size:25px;animation:arrow 1.3s infinite}.num{color:var(--violet);font-size:23px;font-weight:900}@keyframes tilt{50%{transform:rotateX(5deg) rotateY(-3deg)}}@keyframes float3d{50%{transform:translateY(-12px) rotateY(12deg)}}@keyframes arrow{50%{transform:translateX(7px);opacity:.55}}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}.kpi{padding:17px;border-radius:16px;background:rgba(10,18,40,.7);border:1px solid var(--line)}.kpi span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}.kpi b{display:block;font-size:27px;margin-top:5px}.analysis{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}.threat{font-size:50px;font-weight:950;color:var(--red)}.bar{height:10px;border-radius:99px;background:#17223b;overflow:hidden;margin:12px 0}.bar i{display:block;height:100%;width:98.5%;background:linear-gradient(90deg,var(--cyan),var(--violet),var(--red));box-shadow:0 0 15px var(--red)}ul{list-style:none}li{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);color:#c6d6e8}li:before{content:"◆";color:var(--red);font-size:8px;margin-right:9px}.recommend{margin-top:16px;padding:16px;border-left:3px solid var(--cyan);background:rgba(84,230,255,.06);border-radius:10px;color:var(--cyan);font-weight:750}
+.audit{display:grid;gap:12px}.incident{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;padding:17px;border:1px solid var(--line);border-radius:16px;background:rgba(10,18,40,.7)}.field small{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:1px}.field b{font-size:12px;word-break:break-word}.empty{text-align:center;padding:55px;color:var(--muted);border:1px dashed var(--line);border-radius:18px}.toast{position:fixed;right:22px;bottom:22px;z-index:20;padding:14px 17px;border-radius:12px;background:#0b1530;border:1px solid var(--line);box-shadow:0 15px 50px #0008;transform:translateY(120px);transition:.3s}.toast.show{transform:none}.mini{font-size:11px;color:var(--muted)}footer{text-align:center;color:#60758e;font-size:11px;padding-top:24px}
+@media(max-width:950px){.grid,.analysis{grid-template-columns:1fr 1fr}.incident{grid-template-columns:repeat(3,1fr)}.flowline{transform:scale(.8)}}@media(max-width:650px){.app{width:94vw}.top{align-items:flex-start}.grid,.analysis,.kpis{grid-template-columns:1fr}.status{font-size:10px}.flow3d{height:520px}.flowline{flex-direction:column;transform:none}.arrow{transform:rotate(90deg)}.incident{grid-template-columns:1fr 1fr}.toolbar .btn{flex:1}.brand h1{font-size:24px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<canvas id="space"></canvas><div class="nebula"></div>
+<div class="app">
+<header class="top">
+<div class="brand"><div class="orb"></div><div><h1>GALAXYFLOWS</h1><p>AI-POWERED ADAPTIVE CYBER DEFENSE</p></div></div>
+<div id="status" class="status">● SYSTEM SECURE</div>
+</header>
+<nav class="tabs" aria-label="Dashboard sections">
+<button class="tab active" data-tab="dashboard">Dashboard</button><button class="tab" data-tab="analysis">AI Analysis</button><button class="tab" data-tab="audit">Blockchain Audit</button><button class="tab" data-tab="settings">Settings</button>
+</nav>
+
+<section id="dashboard" class="panel active">
+<div class="toolbar"><button class="btn" id="simulate">⚡ Simulate Threat</button><button class="btn alt" id="respond" disabled>🛡 Execute AI Response</button><button class="btn ghost" id="refresh">↻ Live Refresh</button></div>
+<div class="kpis"><div class="kpi"><span>Active Nodes</span><b id="nodesKpi">3</b></div><div class="kpi"><span>Avg Latency</span><b id="latKpi">48ms</b></div><div class="kpi"><span>Requests / sec</span><b id="reqKpi">6.4K</b></div><div class="kpi"><span>AI Confidence</span><b id="confKpi">99.1%</b></div></div>
+<div class="grid"><div id="nodes" class="full grid"></div>
+<div class="card full"><div class="section-title">◈ Network Metrics Timeline</div><div class="chartwrap"><canvas id="chart"></canvas></div></div>
+<div class="card full"><div class="section-title">◈ 3D Security Response Flow</div><div class="flow3d"><div class="flowline">
+<div class="flowbox"><div class="num">01</div><strong>TELEMETRY</strong></div><div class="arrow">→</div>
+<div class="flowbox"><div class="num">02</div><strong>AI DETECTION</strong></div><div class="arrow">→</div>
+<div class="flowbox"><div class="num">03</div><strong>THREAT ANALYSIS</strong></div><div class="arrow">→</div>
+<div class="flowbox"><div class="num">04</div><strong>ADAPTIVE ROUTE</strong></div><div class="arrow">→</div>
+<div class="flowbox"><div class="num">05</div><strong>AUDIT RECORD</strong></div>
+</div></div></div></div>
+</section>
+
+<section id="analysis" class="panel"><div id="analysisContent" class="analysis"><div class="card full empty">No active threat. GalaxyFlows is continuously monitoring the network.</div></div></section>
+<section id="audit" class="panel"><div id="auditContent" class="audit"><div class="empty">No incidents recorded. Execute an AI response to create an immutable audit entry.</div></div></section>
+<section id="settings" class="panel"><div class="grid">
+<div class="card"><div class="section-title">System Configuration</div><p class="mini">Monitoring interval</p><h3 style="margin:8px 0 16px">1 second</h3><p class="mini">Threat simulation is local/demo data. No backend or external API is required.</p></div>
+<div class="card"><div class="section-title">Deployment</div><p class="mini">This application is a self-contained static HTML file. It can be deployed directly to Netlify, GitHub Pages, Cloudflare Pages or any static host.</p></div>
+<div class="card"><div class="section-title">Controls</div><button class="btn ghost" id="reset">Reset Demo State</button></div>
+</div></section>
+<footer>GALAXYFLOWS • Single-file static build • Client-side simulation</footer>
+</div><div id="toast" class="toast"></div>
+
+<script>
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const baseNodes=[
+{id:1,name:'Galaxy-Core-01',cpu:35,latency:45,requests:2100,errors:2,status:'healthy',threat:'LOW'},
+{id:2,name:'Galaxy-Edge-02',cpu:42,latency:52,requests:2300,errors:1,status:'healthy',threat:'LOW'},
+{id:3,name:'Galaxy-Edge-03',cpu:38,latency:48,requests:2000,errors:3,status:'healthy',threat:'LOW'}];
+const state={nodes:structuredClone(baseNodes),threat:false,analysis:null,incidents:[],live:true};
+const history=[45,48,52,50,55,49,47,51,53,48,46,50,52,49,48,51,47,50];
+function toast(t){const x=$('#toast');x.textContent=t;x.classList.add('show');clearTimeout(window._toast);window._toast=setTimeout(()=>x.classList.remove('show'),2200)}
+function renderNodes(){
+ $('#nodes').innerHTML=state.nodes.map(n=>`<article class="card node ${n.status==='critical'?'critical':''}">
+ <div class="nodehead"><div><h3>${n.name}</h3><span class="mini">${n.status==='critical'?'ANOMALY DETECTED':'Adaptive node online'}</span></div><span class="badge ${n.threat==='CRITICAL'?'crit':n.threat==='MEDIUM'?'warn':''}">● ${n.threat}</span></div>
+ <div class="metrics"><div class="metric"><small>CPU</small><b class="${n.cpu>80?'critical':''}">${n.cpu}%</b></div><div class="metric"><small>Latency</small><b class="${n.latency>500?'critical':''}">${n.latency}ms</b></div><div class="metric"><small>Requests</small><b>${n.requests.toLocaleString()}/s</b></div><div class="metric"><small>Errors</small><b class="${n.errors>100?'critical':''}">${n.errors}</b></div></div></article>`).join('');
+ const avg=Math.round(state.nodes.reduce((a,n)=>a+n.latency,0)/state.nodes.length), req=state.nodes.reduce((a,n)=>a+n.requests,0);
+ $('#latKpi').textContent=avg+'ms';$('#reqKpi').textContent=(req/1000).toFixed(1)+'K';$('#nodesKpi').textContent=state.nodes.length;$('#confKpi').textContent=state.analysis?state.analysis.confidence+'%':'99.1%';
+}
+function drawChart(){
+ const c=$('#chart'),r=c.getBoundingClientRect(),dpr=devicePixelRatio||1,w=Math.max(300,r.width),h=Math.max(220,r.height);c.width=w*dpr;c.height=h*dpr;const x=c.getContext('2d');x.scale(dpr,dpr);x.clearRect(0,0,w,h);
+ const pad=30, max=100; x.strokeStyle='rgba(142,164,189,.12)';x.lineWidth=1;
+ for(let i=0;i<5;i++){let y=pad+i*(h-2*pad)/4;x.beginPath();x.moveTo(pad,y);x.lineTo(w-pad,y);x.stroke()}
+ const pts=history.map((v,i)=>[pad+i*(w-2*pad)/(history.length-1),pad+(h-2*pad)*(1-v/max)]);
+ const g=x.createLinearGradient(pad,0,w-pad,0);g.addColorStop(0,'#54e6ff');g.addColorStop(1,'#a970ff');x.strokeStyle=g;x.lineWidth=3;x.lineJoin='round';x.beginPath();pts.forEach((p,i)=>i?x.lineTo(...p):x.moveTo(...p));x.stroke();
+ pts.forEach(p=>{x.fillStyle='#54e6ff';x.beginPath();x.arc(...p,3.5,0,Math.PI*2);x.fill()});x.fillStyle='#8ea4bd';x.font='11px system-ui';x.fillText('Latency / health signal',pad,16);
+}
+function renderAnalysis(){
+ const a=state.analysis;if(!a){$('#analysisContent').innerHTML='<div class="card full empty">No active threat. GalaxyFlows is continuously monitoring the network.</div>';return}
+ $('#analysisContent').innerHTML=`<div class="card"><div class="section-title">🚨 Threat Classification</div><div class="threat">${a.level}</div><div class="mini">AI confidence</div><div class="bar"><i></i></div><b>${a.confidence}%</b></div><div class="card"><div class="section-title">Detection Signals</div><ul>${a.reasons.map(r=>`<li>${r}</li>`).join('')}</ul><div class="recommend">AI Recommendation → ${a.recommendation}</div></div>`;
+}
+function renderAudit(){
+ if(!state.incidents.length){$('#auditContent').innerHTML='<div class="empty">No incidents recorded. Execute an AI response to create an immutable audit entry.</div>';return}
+ $('#auditContent').innerHTML=state.incidents.map(i=>`<article class="incident">${[['Incident',i.id],['Threat',i.threat],['Node',i.node],['Decision',i.decision],['Status',i.status],['TX Hash',i.hash]].map(([a,b])=>`<div class="field"><small>${a}</small><b>${b}</b></div>`).join('')}</article>`).join('');
+}
+function update(){renderNodes();renderAnalysis();renderAudit();const s=$('#status');s.textContent=state.threat?'● THREAT DETECTED':'● SYSTEM SECURE';s.classList.toggle('danger',state.threat);$('#respond').disabled=!state.threat;drawChart()}
+function simulate(){
+ state.threat=true;state.nodes[0]={...state.nodes[0],cpu:92,latency:850,requests:5200,errors:145,status:'critical',threat:'CRITICAL'};
+ state.analysis={level:'CRITICAL',confidence:98.7,reasons:['Latency spike: 850ms vs 45ms baseline','Error burst: 145 events vs 2 baseline','CPU saturation: 92% on Galaxy-Core-01','Traffic concentration indicates volumetric anomaly'],recommendation:'Reroute traffic to healthy edge nodes and isolate the degraded node.'};
+ history.push(86,92);history.splice(0,history.length-18);update();toast('Threat simulated — AI analysis complete');}
+function respond(){
+ if(!state.threat)return;const hash='0x'+crypto.getRandomValues(new Uint32Array(3)).map(n=>n.toString(16).padStart(8,'0')).join('').toUpperCase();
+ state.incidents.unshift({id:'INC-'+String(state.incidents.length+1).padStart(3,'0'),threat:'CRITICAL • Traffic Anomaly',node:'Galaxy-Core-01',decision:'Reroute → Galaxy-Edge-02',status:'Recorded',hash});
+ state.nodes[0]={...baseNodes[0]};state.threat=false;state.analysis=null;history.push(48);history.splice(0,history.length-18);update();toast('AI response executed and audit recorded')}
+function liveTick(){
+ if(!state.live||state.threat)return;
+ state.nodes=state.nodes.map(n=>({...n,cpu:Math.max(15,Math.min(70,n.cpu+Math.round((Math.random()-.5)*8))),latency:Math.max(25,Math.min(90,n.latency+Math.round((Math.random()-.5)*10))),requests:Math.max(1200,n.requests+Math.round((Math.random()-.5)*220)),errors:Math.max(0,Math.round(n.errors+(Math.random()-.5)*2))}));
+ history.push(state.nodes.reduce((a,n)=>a+n.latency,0)/state.nodes.length);history.splice(0,history.length-18);update();
+}
+$$('.tab').forEach(b=>b.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('active'));$$('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('#'+b.dataset.tab).classList.add('active');if(b.dataset.tab==='dashboard')drawChart()});
+$('#simulate').onclick=simulate;$('#respond').onclick=respond;$('#refresh').onclick=()=>{liveTick();toast('Telemetry refreshed')};$('#reset').onclick=()=>{state.nodes=structuredClone(baseNodes);state.threat=false;state.analysis=null;state.incidents=[];history.splice(0,history.length,...[45,48,52,50,55,49,47,51,53,48,46,50,52,49,48,51,47,50]);update();toast('Demo state reset')};setInterval(liveTick,1200);addEventListener('resize',drawChart);update();
+
+/* Lightweight 3D starfield — no libraries or external assets. */
+const sc=$('#space'),ctx=sc.getContext('2d');let stars=[];
+function resizeSpace(){sc.width=innerWidth*devicePixelRatio;sc.height=innerHeight*devicePixelRatio;ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);stars=Array.from({length:Math.min(420,Math.floor(innerWidth/3))},()=>({x:(Math.random()-.5)*innerWidth,y:(Math.random()-.5)*innerHeight,z:Math.random()*innerWidth+1,p:Math.random()*Math.PI*2}))}
+function starfield(){const w=innerWidth,h=innerHeight,cx=w/2,cy=h/2;ctx.fillStyle='rgba(2,4,12,.24)';ctx.fillRect(0,0,w,h);for(const s of stars){s.z-=.65;if(s.z<1){s.z=w;s.x=(Math.random()-.5)*w;s.y=(Math.random()-.5)*h}s.p+=.008;const k=420/s.z,px=cx+s.x*k,py=cy+s.y*k,sz=Math.max(.25,(1-s.z/w)*2.2);if(px<0||px>w||py<0||py>h)continue;ctx.globalAlpha=.18+.5*Math.abs(Math.sin(s.p));ctx.fillStyle='#bfeaff';ctx.beginPath();ctx.arc(px,py,sz,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1;requestAnimationFrame(starfield)}
+resizeSpace();addEventListener('resize',resizeSpace);starfield();
+</script>
+
+<style>
+/* ===== GALAXYFLOWS ENHANCEMENT LAYER ===== */
+:root{
+  --gf-cyan:#22d3ee;--gf-purple:#a855f7;--gf-blue:#60a5fa;
+  --gf-green:#34d399;--gf-red:#fb7185;--gf-amber:#fbbf24;
+  --gf-panel:rgba(9,16,39,.72);--gf-border:rgba(96,165,250,.22);
+}
+html{scroll-behavior:smooth}
+body{background:#030712!important}
+.galaxy-bg{background:
+ radial-gradient(circle at 50% 40%,rgba(124,58,237,.18),transparent 32%),
+ radial-gradient(circle at 15% 75%,rgba(34,211,238,.12),transparent 30%),
+ radial-gradient(circle at 85% 20%,rgba(59,130,246,.12),transparent 28%),#030712!important}
+.gf-cosmos{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.gf-orbit{position:absolute;border:1px solid rgba(96,165,250,.09);border-radius:50%;left:50%;top:45%;transform:translate(-50%,-50%) rotateX(67deg);animation:gfOrbit 24s linear infinite}
+.gf-orbit.o1{width:560px;height:560px}.gf-orbit.o2{width:820px;height:820px;animation-duration:34s;animation-direction:reverse}
+.gf-orbit.o3{width:1100px;height:1100px;animation-duration:46s}
+@keyframes gfOrbit{to{transform:translate(-50%,-50%) rotateX(67deg) rotateZ(360deg)}}
+.gf-scroll{position:fixed;right:24px;bottom:24px;z-index:30;width:48px;height:48px;border:1px solid rgba(34,211,238,.45);border-radius:50%;background:rgba(5,12,30,.78);backdrop-filter:blur(14px);color:#67e8f9;font-size:22px;cursor:pointer;box-shadow:0 0 30px rgba(34,211,238,.16);transition:.25s}
+.gf-scroll:hover{transform:translateY(-4px);box-shadow:0 0 38px rgba(168,85,247,.35)}
+.gf-hero{margin:0 0 28px;padding:34px;border:1px solid var(--gf-border);border-radius:24px;background:linear-gradient(135deg,rgba(15,23,42,.84),rgba(8,15,35,.6));box-shadow:0 25px 80px rgba(0,0,0,.28);position:relative;overflow:hidden}
+.gf-hero:after{content:"";position:absolute;width:320px;height:320px;right:-100px;top:-150px;background:radial-gradient(circle,rgba(168,85,247,.24),transparent 65%);animation:gfPulse 4s ease-in-out infinite}
+@keyframes gfPulse{50%{transform:scale(1.25);opacity:.55}}
+.gf-kicker{font-size:11px;letter-spacing:2.5px;color:#67e8f9;text-transform:uppercase;margin-bottom:12px}
+.gf-hero h1{font-size:clamp(30px,5vw,58px);line-height:1.02;margin-bottom:14px;background:linear-gradient(90deg,#fff,#67e8f9,#c084fc);-webkit-background-clip:text;color:transparent}
+.gf-hero p{max-width:780px;color:#94a3b8;line-height:1.7}
+.gf-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px}
+.gf-stat{padding:15px;border-radius:14px;background:rgba(15,23,42,.68);border:1px solid rgba(148,163,184,.12)}
+.gf-stat b{display:block;font-size:22px;color:#e0f2fe}.gf-stat span{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:1px}
+.gf-section{margin:28px 0;padding:26px;border:1px solid rgba(96,165,250,.18);border-radius:22px;background:rgba(5,12,30,.54);backdrop-filter:blur(14px)}
+.gf-section-title{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:20px}
+.gf-section-title h2{font-size:20px}.gf-pill{font-size:10px;letter-spacing:1px;padding:6px 10px;border-radius:999px;background:rgba(34,211,238,.09);border:1px solid rgba(34,211,238,.22);color:#67e8f9}
+.gf-flow3d{position:relative;min-height:340px;perspective:1000px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:18px;background:radial-gradient(circle at center,rgba(59,130,246,.1),transparent 50%),#020617}
+.gf-flow3d .gf-track{position:absolute;width:78%;height:2px;background:linear-gradient(90deg,transparent,#22d3ee,#a855f7,#22d3ee,transparent);box-shadow:0 0 18px rgba(34,211,238,.5)}
+.gf-node3d{width:112px;height:112px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:1px solid rgba(103,232,249,.48);background:radial-gradient(circle at 35% 25%,rgba(96,165,250,.35),rgba(15,23,42,.92) 65%);box-shadow:0 0 30px rgba(34,211,238,.16),inset 0 0 25px rgba(168,85,247,.08);z-index:2;animation:gfFloat 3s ease-in-out infinite;position:relative}
+.gf-node3d:before{content:"";position:absolute;inset:-9px;border:1px dashed rgba(168,85,247,.3);border-radius:50%;animation:gfSpin 7s linear infinite}
+.gf-node3d span{font-size:25px}.gf-node3d small{font-size:9px;letter-spacing:1px;color:#94a3b8}
+.gf-nodes{width:100%;display:flex;justify-content:space-around;align-items:center;position:relative;z-index:3}
+.gf-node3d:nth-child(2){animation-delay:.4s}.gf-node3d:nth-child(3){animation-delay:.8s}.gf-node3d:nth-child(4){animation-delay:1.2s}.gf-node3d:nth-child(5){animation-delay:1.6s}
+@keyframes gfFloat{50%{transform:translateY(-12px) rotateY(8deg)}}@keyframes gfSpin{to{transform:rotateZ(360deg)}}
+.gf-packet{position:absolute;width:8px;height:8px;border-radius:50%;background:#67e8f9;box-shadow:0 0 18px #22d3ee;animation:gfPacket 3.8s linear infinite;left:10%;z-index:4}
+@keyframes gfPacket{to{left:90%}}
+.gf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.gf-card{padding:20px;border-radius:16px;background:linear-gradient(145deg,rgba(15,23,42,.9),rgba(8,15,35,.68));border:1px solid rgba(96,165,250,.16);transition:.25s}
+.gf-card:hover{transform:translateY(-5px);border-color:rgba(34,211,238,.4);box-shadow:0 18px 50px rgba(0,0,0,.22)}
+.gf-card .icon{font-size:24px;margin-bottom:10px}.gf-card h3{font-size:15px;margin-bottom:7px}.gf-card p{font-size:12px;color:#94a3b8;line-height:1.6}
+.gf-progress{height:7px;background:#111827;border-radius:10px;overflow:hidden;margin-top:12px}.gf-progress i{display:block;height:100%;width:var(--w);background:linear-gradient(90deg,#22d3ee,#a855f7);border-radius:inherit;box-shadow:0 0 12px rgba(34,211,238,.4)}
+.gf-mini-table{width:100%;border-collapse:collapse}.gf-mini-table td{padding:12px;border-bottom:1px solid rgba(148,163,184,.09);font-size:12px}.gf-mini-table td:last-child{text-align:right;color:#67e8f9}
+.gf-toast{position:fixed;top:22px;right:22px;z-index:100;padding:14px 18px;border-radius:12px;background:rgba(5,12,30,.92);border:1px solid rgba(34,211,238,.35);box-shadow:0 15px 50px rgba(0,0,0,.35);transform:translateY(-20px);opacity:0;pointer-events:none;transition:.3s;color:#dbeafe;font-size:13px}.gf-toast.show{transform:none;opacity:1}
+@media(max-width:800px){.gf-stats,.gf-grid{grid-template-columns:repeat(2,1fr)}.gf-nodes{gap:20px}.gf-node3d{width:82px;height:82px}.gf-node3d span{font-size:20px}.gf-flow3d{min-height:300px}.gf-flow3d .gf-track{display:none}}
+@media(max-width:520px){.gf-stats,.gf-grid{grid-template-columns:1fr}.gf-hero{padding:24px}.gf-nodes{flex-wrap:wrap}.gf-node3d{width:92px;height:92px}}
+</style>
+
+<div class="gf-cosmos"><div class="gf-orbit o1"></div><div class="gf-orbit o2"></div><div class="gf-orbit o3"></div></div>
+<button class="gf-scroll" id="gfScroll" aria-label="Scroll down">↓</button>
+<div class="gf-toast" id="gfToast">GalaxyFlows system ready</div>
+
+<script>
+(function(){
+  const container=document.querySelector('.container');
+  if(!container)return;
+
+  const hero=document.createElement('section');
+  hero.className='gf-hero';
+  hero.innerHTML=`
+    <div class="gf-kicker">GALAXYFLOWS • INTELLIGENT CYBER INFRASTRUCTURE</div>
+    <h1>See the network.<br>Predict the threat.</h1>
+    <p>Interactive frontend command center for adaptive traffic intelligence, AI-assisted threat analysis and immutable security operations.</p>
+    <div class="gf-stats">
+      <div class="gf-stat"><b id="gfMetric1">99.98%</b><span>Uptime posture</span></div>
+      <div class="gf-stat"><b id="gfMetric2">12ms</b><span>AI response</span></div>
+      <div class="gf-stat"><b id="gfMetric3">1,284</b><span>Events analyzed</span></div>
+      <div class="gf-stat"><b id="gfMetric4">SECURE</b><span>Protection state</span></div>
+    </div>`;
+  container.insertBefore(hero,container.children[1]);
+
+  const section=document.createElement('section');
+  section.className='gf-section';
+  section.innerHTML=`
+    <div class="gf-section-title"><h2>🌌 3D Adaptive Response Flow</h2><span class="gf-pill">LIVE FRONTEND SIMULATION</span></div>
+    <div class="gf-flow3d">
+      <div class="gf-track"></div><div class="gf-packet"></div>
+      <div class="gf-nodes">
+        <div class="gf-node3d"><span>📡</span><small>TELEMETRY</small></div>
+        <div class="gf-node3d"><span>🧠</span><small>AI ENGINE</small></div>
+        <div class="gf-node3d"><span>🛡️</span><small>DETECTION</small></div>
+        <div class="gf-node3d"><span>⚡</span><small>RESPONSE</small></div>
+        <div class="gf-node3d"><span>⛓️</span><small>AUDIT</small></div>
+      </div>
+    </div>`;
+  container.appendChild(section);
+
+  const more=document.createElement('section');
+  more.className='gf-section';
+  more.innerHTML=`
+    <div class="gf-section-title"><h2>🧠 AI Intelligence Layer</h2><span class="gf-pill">DEMO MODE</span></div>
+    <div class="gf-grid">
+      <div class="gf-card"><div class="icon">🎯</div><h3>Anomaly Detection</h3><p>Identifies latency, error-rate and resource anomalies across monitored nodes.</p><div class="gf-progress"><i style="--w:94%"></i></div></div>
+      <div class="gf-card"><div class="icon">🔀</div><h3>Adaptive Routing</h3><p>Frontend simulation of intelligent traffic redistribution when a node degrades.</p><div class="gf-progress"><i style="--w:88%"></i></div></div>
+      <div class="gf-card"><div class="icon">🤖</div><h3>AI vs Human</h3><p>Compare automated response speed with a traditional operator decision path.</p><div class="gf-progress"><i style="--w:97%"></i></div></div>
+    </div>`;
+
+  const block=document.createElement('section');
+  block.className='gf-section';
+  block.innerHTML=`
+    <div class="gf-section-title"><h2>⛓️ Blockchain Audit Intelligence</h2><span class="gf-pill">VISUALIZED</span></div>
+    <div class="gf-grid">
+      <div class="gf-card"><div class="icon">🔐</div><h3>Immutable Incident Record</h3><p>Every simulated response can be represented as a tamper-evident audit event.</p></div>
+      <div class="gf-card"><div class="icon">🧾</div><h3>Transaction Trace</h3><p>Incident IDs, decisions, timestamps and transaction hashes are presented in one place.</p></div>
+      <div class="gf-card"><div class="icon">🌐</div><h3>Decentralized Trust</h3><p>Designed as a frontend-ready visualization layer for future blockchain integration.</p></div>
+    </div>
+    <table class="gf-mini-table"><tr><td>Network</td><td>GalaxyChain / Demo</td></tr><tr><td>Consensus</td><td>Verified • Simulation</td></tr><tr><td>Audit integrity</td><td>Operational</td></tr></table>`;
+
+  container.appendChild(more); container.appendChild(block);
+
+  const toast=document.getElementById('gfToast');
+  function notify(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),2200)}
+  document.getElementById('gfScroll').onclick=()=>window.scrollBy({top:window.innerHeight*.82,behavior:'smooth'});
+  window.addEventListener('scroll',()=>{document.getElementById('gfScroll').textContent=(window.scrollY+innerHeight>=document.body.scrollHeight-80)?'↑':'↓'});
+
+  const sim=document.getElementById('simulateBtn');
+  if(sim)sim.addEventListener('click',()=>{notify('AI threat simulation activated • 3D response flow running')});
+  const exec=document.getElementById('executeBtn');
+  if(exec)exec.addEventListener('click',()=>{setTimeout(()=>notify('AI response recorded • audit layer synchronized'),150)});
+})();
+</script>
+
+</body>
+</html>
